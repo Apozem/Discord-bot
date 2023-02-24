@@ -19,25 +19,28 @@ import java.util.concurrent.ExecutionException;
 public class botListeners extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-
         if(!event.getAuthor().isBot()) {
             if(!event.getMessage().getAttachments().isEmpty()) {
-                //handle image
                 try {
-
                     Message.Attachment att = event.getMessage().getAttachments().get(0);
+                    if(att.getSize() > 10485760) {
+                        return;
+                    }
                     File temp = new File("filetosend.png");
                     att.downloadToFile(temp).get();
                     BufferedImage img = ImageIO.read(temp);
                     Graphics2D g = img.createGraphics();
+                    //draw block
                     g.setStroke(new BasicStroke(3));
                     g.setColor(Color.BLUE);
                     g.drawRect(10, 10, img.getWidth() - 20, img.getHeight() - 20);
-                    File out = new File("send.png");
-                    ImageIO.write(img, "png", out);
-                    Collection<File> imageList = new ArrayList<>();
-                    imageList.add(out);
-                    event.getChannel().sendFiles(FileUpload.fromData(out)).queue();
+                    //draw block
+                    ImageIO.write(img, "png", temp);
+                    event.getChannel().sendFiles(FileUpload.fromData(temp)).queue();
+                    att.close(); //not sure that this helps
+                    if(!temp.delete()) {
+                        System.out.println("Unable to delete " + temp.getName());
+                    }
                 } catch (IOException | ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }

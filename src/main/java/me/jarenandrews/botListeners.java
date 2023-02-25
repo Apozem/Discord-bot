@@ -7,13 +7,10 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 public class botListeners extends ListenerAdapter {
@@ -27,7 +24,7 @@ public class botListeners extends ListenerAdapter {
                         return;
                     }
                     File temp = new File("draw.png");
-                    att.downloadToFile(temp).get(); //dont know current way, oh well
+                    att.downloadToFile(temp).get(); //don't know current way, oh well
                     BufferedImage img = ImageIO.read(temp);
                     Graphics2D g = img.createGraphics();
                     //draw block

@@ -3,7 +3,7 @@ package me.jarenandrews;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -27,13 +27,13 @@ public class botListeners extends ListenerAdapter {
                     att.downloadToFile(temp).get(); //don't know current way, oh well
                     BufferedImage img = ImageIO.read(temp);
                     Graphics2D g = img.createGraphics();
-                    //draw block
+                    //draw block - to replace with distortion
                     g.setStroke(new BasicStroke(3));
                     g.setColor(Color.BLUE);
                     g.drawRect(10, 10, img.getWidth() - 20, img.getHeight() - 20);
                     //draw block
                     ImageIO.write(img, "png", temp);
-                    event.getChannel().sendFiles(FileUpload.fromData(temp)).queue();
+                    event.getChannel().sendFiles(AttachedFile.fromData(temp)).queue();
                     att.close(); //not sure that this helps
                     if(!temp.delete()) { //cant always delete?
                         System.out.println("Unable to delete " + temp.getName());

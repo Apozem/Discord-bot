@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +20,12 @@ public class botListeners extends ListenerAdapter {
         if(!event.getAuthor().isBot()) {
             if(!event.getMessage().getAttachments().isEmpty()) {
                 try {
+                    String input = event.getMessage().getContentRaw();
+                    String[] messageArr = input.split(",");
+                    String message = messageArr[0];
+                    System.out.println("Message to write: " + message);
+                    String font = messageArr[1].strip();
+                    int fontSize = Integer.parseInt(messageArr[2].strip());
                     Message.Attachment att = event.getMessage().getAttachments().get(0);
                     if(att.getSize() > 10485760) {
                         return;
@@ -27,15 +34,17 @@ public class botListeners extends ListenerAdapter {
                     att.downloadToFile(temp).get(); //don't know current way, oh well
                     BufferedImage img = ImageIO.read(temp);
                     Graphics2D g = img.createGraphics();
-                    //draw block - to replace with distortion
-                    g.setStroke(new BasicStroke(3));
-                    g.setColor(Color.BLUE);
-                    g.drawRect(10, 10, img.getWidth() - 20, img.getHeight() - 20);
+                    //caption block - color coming soon
+                    Font meme = new Font(font, Font.PLAIN, fontSize);
+                    g.setFont(meme);
+                    FontRenderContext frc = g.getFontRenderContext();
+                    float messageWidth = (float)meme.getStringBounds(message, frc).getWidth();
+                    g.drawString(message, (img.getWidth()-messageWidth)/2, img.getHeight()-(img.getHeight()/6));
                     //draw block
                     ImageIO.write(img, "png", temp);
                     event.getChannel().sendFiles(AttachedFile.fromData(temp)).queue();
                     att.close(); //not sure that this helps
-                    if(!temp.delete()) { //cant always delete?
+                    if(!temp.delete()) { //can't always delete? overwrites anyway so no big deal
                         System.out.println("Unable to delete " + temp.getName());
                     }
                 } catch (IOException | ExecutionException | InterruptedException e) {

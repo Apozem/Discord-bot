@@ -26,16 +26,21 @@ public class botListeners extends ListenerAdapter {
         if(!event.getAuthor().isBot() && event.getChannel().getName().equals(channelName)) {
             if(!event.getMessage().getAttachments().isEmpty()) {
                 try {
+                    //get message
                     String input = event.getMessage().getContentRaw();
                     String[] messageArr = input.split(",");
+                    //split parameters
                     String message = messageArr[0];
-                    System.out.println("Message to write: " + message);
                     String font = messageArr[1].strip();
                     int fontSize = Integer.parseInt(messageArr[2].strip());
+                    System.out.println("Message to write: " + message);
+                    //get image file
                     Message.Attachment att = event.getMessage().getAttachments().get(0);
+                    //exit if too large, avoids clogging my system with a huge file, only a problem if user has nitro
                     if(att.getSize() > 10485760) {
                         return;
                     }
+                    //create temp file to draw on and send
                     File temp = new File("draw.png");
                     att.downloadToFile(temp).get(); //don't know current way, oh well
                     BufferedImage img = ImageIO.read(temp);
@@ -46,10 +51,13 @@ public class botListeners extends ListenerAdapter {
                     FontRenderContext frc = g.getFontRenderContext();
                     float messageWidth = (float)meme.getStringBounds(message, frc).getWidth();
                     g.drawString(message, (img.getWidth()-messageWidth)/2, img.getHeight()-(img.getHeight()/6));
-                    //draw block
+                    //end caption block
+                    //write the changes to the image
                     ImageIO.write(img, "png", temp);
+                    //send image to the channel
                     event.getChannel().sendFiles(AttachedFile.fromData(temp)).queue();
                     att.close(); //not sure that this helps
+                    //attempt deletion
                     if(!temp.delete()) { //can't always delete? overwrites anyway so no big deal
                         System.out.println("Unable to delete " + temp.getName());
                     }

@@ -42,6 +42,7 @@ public class botListeners extends ListenerAdapter {
                     }
                     //create temp file to draw on and send
                     File temp = new File("draw.png");
+                    //noinspection deprecation
                     att.downloadToFile(temp).get(); //don't know current way, oh well
                     BufferedImage img = ImageIO.read(temp);
                     Graphics2D g = img.createGraphics();
@@ -50,7 +51,7 @@ public class botListeners extends ListenerAdapter {
                     g.setFont(meme);
                     FontRenderContext frc = g.getFontRenderContext();
                     float messageWidth = (float)meme.getStringBounds(message, frc).getWidth();
-                    g.drawString(message, (img.getWidth()-messageWidth)/2, img.getHeight()-(img.getHeight()/6));
+                    g.drawString(message, (img.getWidth()-messageWidth)/2, img.getHeight()-(int)(img.getHeight()/6.0));
                     //end caption block
                     //write the changes to the image
                     ImageIO.write(img, "png", temp);

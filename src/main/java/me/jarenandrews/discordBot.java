@@ -13,7 +13,7 @@ public class discordBot extends ListenerAdapter {
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .setActivity(Activity.listening("Garbage metal"))
-                .addEventListeners(new botListeners())
+                .addEventListeners(new botListeners(args[1]))
                 .build();
     }
 }

@@ -15,9 +15,15 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 public class botListeners extends ListenerAdapter {
+    protected String channelName;
+
+    public botListeners(String channelName) {
+        this.channelName = channelName;
+    }
+
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        if(!event.getAuthor().isBot()) {
+        if(!event.getAuthor().isBot() && event.getChannel().getName().equals(channelName)) {
             if(!event.getMessage().getAttachments().isEmpty()) {
                 try {
                     String input = event.getMessage().getContentRaw();
@@ -50,9 +56,6 @@ public class botListeners extends ListenerAdapter {
                 } catch (IOException | ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else { //echos message
-                String message = event.getMessage().getContentRaw();
-                event.getChannel().sendMessage("This was sent: " + message).queue();
             }
         }
     }

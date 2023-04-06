@@ -26,9 +26,18 @@ public class botListeners extends ListenerAdapter {
         if(!event.getAuthor().isBot() && event.getChannel().getName().equals(channelName)) {
             if(!event.getMessage().getAttachments().isEmpty()) {
                 try {
-                    //tell the user to stop being dumb and send an image in the channel instead of whatever file they just sent
+                    //log request
+                    System.out.println("Request from user: " + event.getAuthor().getName());
+                    //tell the user to stop being dumb and send an image in the channel instead of whatever file they just sent, and log it to standard output
                     if(!event.getMessage().getAttachments().get(0).isImage()) {
                         event.getChannel().sendMessage("Attached file has to be an image, idiot. " + event.getMessage().getAuthor().getAsMention()).queue();
+                        System.out.println("User " + event.getAuthor().getName() + " tried to upload a file that was not an image. shame.");
+                        return;
+                    }
+                    //exit if too large, avoids clogging my system with a huge file, only a problem if user has nitro I think
+                    if(event.getMessage().getAttachments().get(0).getSize() > 10485760) {
+                        event.getChannel().sendMessage("Attached file is too large, idiot. " + event.getMessage().getAuthor().getAsMention()).queue();
+                        System.out.println("User " + event.getAuthor().getName() + " tried to upload a file that was too large. shame.");
                         return;
                     }
                     //get message
@@ -41,11 +50,6 @@ public class botListeners extends ListenerAdapter {
                     System.out.println("Message to write: " + message);
                     //get image file
                     Message.Attachment att = event.getMessage().getAttachments().get(0);
-                    //exit if too large, avoids clogging my system with a huge file, only a problem if user has nitro
-                    if(att.getSize() > 10485760) {
-                        event.getChannel().sendMessage("Attached file is too large, idiot. " + event.getMessage().getAuthor().getAsMention()).queue();
-                        return;
-                    }
                     //create temp file to draw on and send
                     File temp = new File("draw.png");
                     //noinspection deprecation

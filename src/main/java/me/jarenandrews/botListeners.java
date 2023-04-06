@@ -26,6 +26,11 @@ public class botListeners extends ListenerAdapter {
         if(!event.getAuthor().isBot() && event.getChannel().getName().equals(channelName)) {
             if(!event.getMessage().getAttachments().isEmpty()) {
                 try {
+                    //tell the user to stop being dumb and send an image in the channel instead of whatever file they just sent
+                    if(!event.getMessage().getAttachments().get(0).isImage()) {
+                        event.getChannel().sendMessage("Attached file has to be an image, idiot. " + event.getMessage().getAuthor().getAsMention()).queue();
+                        return;
+                    }
                     //get message
                     String input = event.getMessage().getContentRaw();
                     String[] messageArr = input.split(",");
@@ -38,6 +43,7 @@ public class botListeners extends ListenerAdapter {
                     Message.Attachment att = event.getMessage().getAttachments().get(0);
                     //exit if too large, avoids clogging my system with a huge file, only a problem if user has nitro
                     if(att.getSize() > 10485760) {
+                        event.getChannel().sendMessage("Attached file is too large, idiot. " + event.getMessage().getAuthor().getAsMention()).queue();
                         return;
                     }
                     //create temp file to draw on and send

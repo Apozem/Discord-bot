@@ -12,7 +12,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
@@ -28,8 +27,6 @@ public class botListeners extends ListenerAdapter {
         if(!event.getAuthor().isBot() && event.getChannel().getName().equals(channelName)) {
             if(!event.getMessage().getAttachments().isEmpty()) {
                 try {
-                    //init color array for comparison
-                    String[] colors = new String[] {"black", "blue", "cyan", "darkgray", "gray", "green", "lightgray", "magenta", "orange", "pink", "red", "white", "yellow"};
                     //log request
                     System.out.println("Request from user: " + event.getAuthor().getName());
                     //tell the user to stop being dumb and send an image in the channel instead of whatever file they just sent, and log it to standard output
@@ -49,8 +46,7 @@ public class botListeners extends ListenerAdapter {
                     String[] messageArr = input.split(",");
                     //error if array is not size 4 and list colors
                     if(messageArr.length != 4) {
-                        event.getChannel().sendMessage("Message structure should be *Message*, *font*, *font size*, *color* with the commas between, idiot. " + event.getMessage().getAuthor().getAsMention()
-                                + "\nAvailable colors are: \nblack\nblue\ncyan\ndarkgray\ngray\ngreen\nlightgray\nmagenta\norange\npink\nred\nwhite\nyellow").queue();
+                        event.getChannel().sendMessage("Message structure should be *Message*, *font*, *font size*, *color* with the commas between, idiot. " + event.getMessage().getAuthor().getAsMention()).queue();
                         System.out.println("User " + event.getAuthor().getName() + " used incorrect syntax when trying to use the bot. shame.");
                         return;
                     }

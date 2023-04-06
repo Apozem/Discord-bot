@@ -12,6 +12,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public class botListeners extends ListenerAdapter {
@@ -26,6 +28,8 @@ public class botListeners extends ListenerAdapter {
         if(!event.getAuthor().isBot() && event.getChannel().getName().equals(channelName)) {
             if(!event.getMessage().getAttachments().isEmpty()) {
                 try {
+                    //init color array for comparison
+                    String[] colors = new String[] {"black", "blue", "cyan", "darkgray", "gray", "green", "lightgray", "magenta", "orange", "pink", "red", "white", "yellow"};
                     //log request
                     System.out.println("Request from user: " + event.getAuthor().getName());
                     //tell the user to stop being dumb and send an image in the channel instead of whatever file they just sent, and log it to standard output
@@ -43,17 +47,21 @@ public class botListeners extends ListenerAdapter {
                     //get message
                     String input = event.getMessage().getContentRaw();
                     String[] messageArr = input.split(",");
-                    //error if array is not size 3
-                    if(messageArr.length != 3) {
-                        event.getChannel().sendMessage("Message structure should be *Message*, *font*, *font size* with the commas between, idiot. " + event.getMessage().getAuthor().getAsMention()).queue();
+                    //error if array is not size 4 and list colors
+                    if(messageArr.length != 4) {
+                        event.getChannel().sendMessage("Message structure should be *Message*, *font*, *font size*, *color* with the commas between, idiot. " + event.getMessage().getAuthor().getAsMention()
+                                + "\nAvailable colors are: \nblack\nblue\ncyan\ndarkgray\ngray\ngreen\nlightgray\nmagenta\norange\npink\nred\nwhite\nyellow").queue();
                         System.out.println("User " + event.getAuthor().getName() + " used incorrect syntax when trying to use the bot. shame.");
                         return;
                     }
-                    //split parameters
-                    String message = messageArr[0];
-                    String font = messageArr[1].strip();
                     try {
+                        //split parameters
+                        String message = messageArr[0];
+                        String font = messageArr[1].strip();
                         int fontSize = Integer.parseInt(messageArr[2].strip());
+                        String color = messageArr[3].strip();
+                        //change color, error if color is not available
+
                         System.out.println("Message to write: " + message);
                         //get image file
                         Message.Attachment att = event.getMessage().getAttachments().get(0);
@@ -66,6 +74,13 @@ public class botListeners extends ListenerAdapter {
                         //caption block - color coming soon
                         Font meme = new Font(font, Font.PLAIN, fontSize);
                         g.setFont(meme);
+                        //set color
+                        if(setColor(color, g) == 1) {
+                            event.getChannel().sendMessage("Invalid color used, idiot. " + event.getMessage().getAuthor().getAsMention()
+                                    + "\nAvailable colors are: \nblack\nblue\ncyan\ndarkgray\ngray\ngreen\nlightgray\nmagenta\norange\npink\nred\nwhite\nyellow").queue();
+                            System.out.println("User " + event.getAuthor().getName() + " used incorrect color when trying to use the bot. shame.");
+                            return;
+                        }
                         FontRenderContext frc = g.getFontRenderContext();
                         float messageWidth = (float)meme.getStringBounds(message, frc).getWidth();
                         g.drawString(message, (img.getWidth()-messageWidth)/2, img.getHeight()-(int)(img.getHeight()/6.0));
@@ -88,5 +103,50 @@ public class botListeners extends ListenerAdapter {
                 }
             }
         }
+    }
+
+    private int setColor(String color, Graphics2D g) {
+        switch (color.toLowerCase(Locale.ROOT)){
+            case "black":
+                g.setColor(Color.BLACK);
+                return 0;
+            case "blue":
+                g.setColor(Color.BLUE);
+                return 0;
+            case "cyan":
+                g.setColor(Color.CYAN);
+                return 0;
+            case "darkgray":
+                g.setColor(Color.darkGray);
+                return 0;
+            case "gray":
+                g.setColor(Color.gray);
+                return 0;
+            case "green":
+                g.setColor(Color.green);
+                return 0;
+            case "lightgray":
+                g.setColor(Color.LIGHT_GRAY);
+                return 0;
+            case "magenta":
+                g.setColor(Color.magenta);
+                return 0;
+            case "orange":
+                g.setColor(Color.ORANGE);
+                return 0;
+            case "pink":
+                g.setColor(Color.PINK);
+                return 0;
+            case "red":
+                g.setColor(Color.red);
+                return 0;
+            case "white":
+                g.setColor(Color.WHITE);
+                return 0;
+            case "yellow":
+                g.setColor(Color.YELLOW);
+                return 0;
+        }
+        return 1;
     }
 }
